@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - M3U Processor</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-glass">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <svg class="nav-logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                M3U Processor
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Editor</a>
+                <a href="view.html" class="nav-link">Tablón</a>
+                <div id="userMenu" class="nav-user-menu">
+                    <button class="nav-user-btn" id="userMenuBtn">
+                        <span id="userInitial">A</span>
+                    </button>
+                    <div class="nav-dropdown" id="userDropdown">
+                        <div class="nav-dropdown-header">
+                            <span id="dropdownUsername">Admin</span>
+                            <span id="dropdownEmail" class="nav-dropdown-email">admin@m3uprocessor.xyz</span>
+                        </div>
+                        <div class="nav-dropdown-divider"></div>
+                        <a href="my-playlists.html" class="nav-dropdown-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                            </svg>
+                            Mis Playlists
+                        </a>
+                        <a href="admin.html" class="nav-dropdown-item active">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                            Admin Panel
+                        </a>
+                        <div class="nav-dropdown-divider"></div>
+                        <button class="nav-dropdown-item nav-logout" id="logoutBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            Cerrar Sesión
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Access Denied -->
+    <div id="accessDenied" class="access-denied hidden">
+        <div class="access-denied-card glass-card">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="access-denied-icon">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <h2>Acceso Denegado</h2>
+            <p>Necesitas permisos de administrador para acceder a esta página.</p>
+            <a href="index.html" class="btn btn-primary">Volver al Inicio</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="adminContent">
+        <div class="admin-header">
+            <h1 class="admin-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="title-icon">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                Panel de Administración
+            </h1>
+        </div>
+
+        <!-- Settings Card -->
+        <div class="card glass-card settings-card">
+            <div class="settings-row">
+                <div class="settings-info">
+                    <h3 class="settings-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="settings-icon">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        Puertas Abiertas
+                    </h3>
+                    <p class="settings-description">Cuando está activado, los nuevos usuarios se aprueban automáticamente al registrarse.</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="openRegistrationToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card glass-card">
+                <div class="stat-icon stat-icon-users">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-value" id="totalUsers">-</span>
+                    <span class="stat-label">Usuarios Totales</span>
+                </div>
+            </div>
+            <div class="stat-card glass-card stat-card-warning" id="pendingCard">
+                <div class="stat-icon stat-icon-pending">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-value" id="pendingUsers">-</span>
+                    <span class="stat-label">Pendientes</span>
+                </div>
+            </div>
+            <div class="stat-card glass-card">
+                <div class="stat-icon stat-icon-playlists">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-value" id="totalPlaylists">-</span>
+                    <span class="stat-label">Playlists Totales</span>
+                </div>
+            </div>
+            <div class="stat-card glass-card">
+                <div class="stat-icon stat-icon-hits">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-value" id="totalHits">-</span>
+                    <span class="stat-label">Accesos Totales</span>
+                </div>
+            </div>
+            <div class="stat-card glass-card stat-card-highlight">
+                <div class="stat-icon stat-icon-24h">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-value" id="hits24h">-</span>
+                    <span class="stat-label">Accesos (24h)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="pending">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                Pendientes
+                <span class="tab-badge" id="pendingBadge">0</span>
+            </button>
+            <button class="admin-tab" data-tab="users">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                Usuarios
+            </button>
+            <button class="admin-tab" data-tab="playlists">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                Playlists
+            </button>
+        </div>
+
+        <!-- Tab Content: Pending Users -->
+        <div class="tab-content active" id="pendingTab">
+            <div class="card glass-card">
+                <div class="card-header">
+                    <h3 class="card-title">Usuarios Pendientes de Aprobación</h3>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Email</th>
+                                <th>Fecha Registro</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendingBody">
+                            <tr>
+                                <td colspan="4" class="loading-cell">
+                                    <div class="loading-spinner-small"></div>
+                                    Cargando...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Users -->
+        <div class="tab-content" id="usersTab">
+            <div class="card glass-card">
+                <div class="card-header">
+                    <h3 class="card-title">Gestión de Usuarios</h3>
+                    <div class="search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" class="search-input" id="userSearch" placeholder="Buscar usuarios...">
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Aprobado</th>
+                                <th>Playlists</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersBody">
+                            <tr>
+                                <td colspan="7" class="loading-cell">
+                                    <div class="loading-spinner-small"></div>
+                                    Cargando...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Playlists -->
+        <div class="tab-content" id="playlistsTab">
+            <div class="card glass-card">
+                <div class="card-header">
+                    <h3 class="card-title">Todas las Playlists</h3>
+                    <div class="search-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" class="search-input" id="playlistSearch" placeholder="Buscar playlists...">
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Propietario</th>
+                                <th>Hits</th>
+                                <th>Estado</th>
+                                <th>Pública</th>
+                                <th>Creada</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="playlistsBody">
+                            <tr>
+                                <td colspan="7" class="loading-cell">
+                                    <div class="loading-spinner-small"></div>
+                                    Cargando...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Confirm Modal -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal glass-card modal-small">
+            <div class="modal-header">
+                <h3 class="modal-title" id="confirmTitle">Confirmar Acción</h3>
+                <button class="modal-close" onclick="closeConfirmModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">¿Estás seguro de que deseas realizar esta acción?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeConfirmModal()">Cancelar</button>
+                <button class="btn btn-danger" id="confirmBtn">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal-overlay" id="editUserModal">
+        <div class="modal glass-card">
+            <div class="modal-header">
+                <h3 class="modal-title">Editar Usuario</h3>
+                <button class="modal-close" onclick="closeEditModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editUserId">
+                <div class="form-group">
+                    <label class="form-label">Usuario</label>
+                    <input type="text" class="input-field" id="editUsername" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="text" class="input-field" id="editEmail" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Rol</label>
+                    <select class="input-field select-field" id="editRole">
+                        <option value="user">Usuario</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Estado</label>
+                    <div class="toggle-row">
+                        <span>Cuenta Activa</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="editActive">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeEditModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="saveUserChanges()">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="auth.js"></script>
+    <script>
+        // Configuration
+        const API_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:8000' 
+            : 'https://api.m3uprocessor.xyz';
+
+        let currentUser = null;
+        let allUsers = [];
+        let allPlaylists = [];
+        let pendingUsers = [];
+        let confirmCallback = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await Auth.init();
+            
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            if (user.role !== 'admin') {
+                document.getElementById('adminContent').classList.add('hidden');
+                document.getElementById('accessDenied').classList.remove('hidden');
+                return;
+            }
+            
+            currentUser = user;
+            
+            // Setup tabs
+            setupTabs();
+            
+            // Load initial data
+            await Promise.all([
+                loadStats(),
+                loadPendingUsers(),
+                loadAllUsers(),
+                loadAllPlaylists()
+            ]);
+            
+            // Setup search
+            document.getElementById('userSearch').addEventListener('input', filterUsers);
+            document.getElementById('playlistSearch').addEventListener('input', filterPlaylists);
+            
+            // Setup open registration toggle
+            document.getElementById('openRegistrationToggle').addEventListener('change', toggleOpenRegistration);
+        });
+
+        // Setup tabs
+        function setupTabs() {
+            document.querySelectorAll('.admin-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab + 'Tab').classList.add('active');
+                });
+            });
+        }
+
+        // Load stats
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_URL}/api/admin/stats`, {
+                    headers: Auth.getHeaders()
+                });
+                
+                if (!response.ok) throw new Error('Error loading stats');
+                
+                const data = await response.json();
+                
+                document.getElementById('totalUsers').textContent = formatNumber(data.total_users);
+                document.getElementById('pendingUsers').textContent = formatNumber(data.pending_users);
+                document.getElementById('totalPlaylists').textContent = formatNumber(data.total_playlists);
+                document.getElementById('totalHits').textContent = formatNumber(data.total_hits);
+                document.getElementById('hits24h').textContent = formatNumber(data.hits_24h);
+                document.getElementById('pendingBadge').textContent = data.pending_users;
+                
+                // Update open registration toggle
+                document.getElementById('openRegistrationToggle').checked = data.open_registration;
+                
+                // Highlight pending card if there are pending users
+                const pendingCard = document.getElementById('pendingCard');
+                if (data.pending_users > 0) {
+                    pendingCard.classList.add('has-pending');
+                } else {
+                    pendingCard.classList.remove('has-pending');
+                }
+                
+            } catch (error) {
+                showToast('Error al cargar estadísticas', 'error');
+            }
+        }
+
+        // Toggle open registration
+        async function toggleOpenRegistration() {
+            const toggle = document.getElementById('openRegistrationToggle');
+            const newValue = toggle.checked;
+            
+            try {
+                const response = await fetch(`${API_URL}/api/admin/settings`, {
+                    method: 'PUT',
+                    headers: {
+                        ...Auth.getHeaders(),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ open_registration: newValue })
+                });
+                
+                if (!response.ok) throw new Error('Error updating settings');
+                
+                showToast(newValue ? 'Puertas Abiertas activado' : 'Puertas Abiertas desactivado', 'success');
+                
+            } catch (error) {
+                toggle.checked = !newValue;
+                showToast('Error al actualizar configuración', 'error');
+            }
+        }
+
+        // Load pending users
+        async function loadPendingUsers() {
+            const tbody = document.getElementById('pendingBody');
+            
+            try {
+                const response = await fetch(`${API_URL}/api/admin/users?filter_pending=true`, {
+                    headers: Auth.getHeaders()
+                });
+                
+                if (!response.ok) throw new Error('Error loading pending users');
+                
+                pendingUsers = await response.json();
+                
+                if (pendingUsers.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="empty-cell">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="empty-icon-small">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                                No hay usuarios pendientes de aprobación
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                tbody.innerHTML = pendingUsers.map(user => `
+                    <tr>
+                        <td>
+                            <div class="user-cell">
+                                <span class="user-avatar">${user.username[0].toUpperCase()}</span>
+                                <span class="user-name">${escapeHtml(user.username)}</span>
+                            </div>
+                        </td>
+                        <td>${escapeHtml(user.email)}</td>
+                        <td>${formatDate(user.created_at)}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-success btn-small" onclick="approveUser(${user.id})">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Aprobar
+                                </button>
+                                <button class="btn btn-danger btn-small" onclick="rejectUser(${user.id}, '${escapeHtml(user.username)}')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                    Rechazar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+                
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="4" class="error-cell">Error al cargar usuarios pendientes</td></tr>`;
+            }
+        }
+
+        // Approve user
+        async function approveUser(userId) {
+            try {
+                const response = await fetch(`${API_URL}/api/admin/users/${userId}/approve`, {
+                    method: 'POST',
+                    headers: Auth.getHeaders()
+                });
+                
+                if (!response.ok) throw new Error('Error approving user');
+                
+                showToast('Usuario aprobado correctamente', 'success');
+                
+                await Promise.all([
+                    loadStats(),
+                    loadPendingUsers(),
+                    loadAllUsers()
+                ]);
+                
+            } catch (error) {
+                showToast('Error al aprobar usuario', 'error');
+            }
+        }
+
+        // Reject user
+        async function rejectUser(userId, username) {
+            showConfirm(
+                'Rechazar Usuario',
+                `¿Estás seguro de que deseas rechazar y eliminar al usuario "${username}"?`,
+                async () => {
+                    try {
+                        const response = await fetch(`${API_URL}/api/admin/users/${userId}/reject`, {
+                            method: 'POST',
+                            headers: Auth.getHeaders()
+                        });
+                        
+                        if (!response.ok) throw new Error('Error rejecting user');
+                        
+                        showToast('Usuario rechazado', 'success');
+                        
+                        await Promise.all([
+                            loadStats(),
+                            loadPendingUsers()
+                        ]);
+                        
+                    } catch (error) {
+                        showToast('Error al rechazar usuario', 'error');
+                    }
+                }
+            );
+        }
+
+        // Load all users
+        async function loadAllUsers() {
+            const tbody = document.getElementById('usersBody');
+            
+            try {
+                const response = await fetch(`${API_URL}/api/admin/users`, {
+                    headers: Auth.getHeaders()
+                });
+                
+                if (!response.ok) throw new Error('Error loading users');
+                
+                allUsers = await response.json();
+                renderUsers(allUsers);
+                
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="7" class="error-cell">Error al cargar usuarios</td></tr>`;
+            }
+        }
+
+        // Render users table
+        function renderUsers(users) {
+            const tbody = document.getElementById('usersBody');
+            
+            if (users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="empty-cell">No se encontraron usuarios</td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>
+                        <div class="user-cell">
+                            <span class="user-avatar ${user.role === 'admin' ? 'admin' : ''}">${user.username[0].toUpperCase()}</span>
+                            <span class="user-name">${escapeHtml(user.username)}</span>
+                        </div>
+                    </td>
+                    <td>${escapeHtml(user.email)}</td>
+                    <td>
+                        <span class="role-badge role-${user.role}">${user.role}</span>
+                    </td>
+                    <td>
+                        <span class="status-badge status-${user.is_active ? 'ok' : 'fail'}">${user.is_active ? 'Activo' : 'Inactivo'}</span>
+                    </td>
+                    <td>
+                        <span class="status-badge status-${user.is_approved ? 'ok' : 'unknown'}">${user.is_approved ? 'Sí' : 'No'}</span>
+                    </td>
+                    <td>${user.playlist_count || 0}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-outline btn-small" onclick="editUser(${user.id})" title="Editar">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                            </button>
+                            <button class="btn btn-danger btn-small" onclick="deleteUser(${user.id}, '${escapeHtml(user.username)}')" 
+                                    title="Eliminar" ${user.id === currentUser.id ? 'disabled' : ''}>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Filter users
+        function filterUsers() {
+            const query = document.getElementById('userSearch').value.toLowerCase();
+            const filtered = allUsers.filter(u => 
+                u.username.toLowerCase().includes(query) || 
+                u.email.toLowerCase().includes(query)
+            );
+            renderUsers(filtered);
+        }
+
+        // Edit user
+        function editUser(userId) {
+            const user = allUsers.find(u => u.id === userId);
+            if (!user) return;
+            
+            document.getElementById('editUserId').value = userId;
+            document.getElementById('editUsername').value = user.username;
+            document.getElementById('editEmail').value = user.email;
+            document.getElementById('editRole').value = user.role;
+            document.getElementById('editActive').checked = user.is_active;
+            
+            document.getElementById('editUserModal').classList.add('active');
+        }
+
+        // Save user changes
+        async function saveUserChanges() {
+            const userId = document.getElementById('editUserId').value;
+            const role = document.getElementById('editRole').value;
+            const isActive = document.getElementById('editActive').checked;
+            
+            try {
+                const response = await fetch(`${API_URL}/api/admin/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        ...Auth.getHeaders(),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ role, is_active: isActive })
+                });
+                
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.detail || 'Error updating user');
+                }
+                
+                showToast('Usuario actualizado correctamente', 'success');
+                closeEditModal();
+                
+                await loadAllUsers();
+                
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        // Delete user
+        async function deleteUser(userId, username) {
+            if (userId === currentUser.id) {
+                showToast('No puedes eliminar tu propia cuenta', 'error');
+                return;
+            }
+            
+            showConfirm(
+                'Eliminar Usuario',
+                `¿Estás seguro de que deseas eliminar al usuario "${username}" y todas sus playlists?`,
+                async () => {
+                    try {
+                        const response = await fetch(`${API_URL}/api/admin/users/${userId}`, {
+                            method: 'DELETE',
+                            headers: Auth.getHeaders()
+                        });
+                        
+                        if (!response.ok) {
+                            const data = await response.json();
+                            throw new Error(data.detail || 'Error deleting user');
+                        }
+                        
+                        showToast('Usuario eliminado', 'success');
+                        
+                        await Promise.all([
+                            loadStats(),
+                            loadAllUsers(),
+                            loadAllPlaylists()
+                        ]);
+                        
+                    } catch (error) {
+                        showToast(error.message, 'error');
+                    }
+                }
+            );
+        }
+
+        // Load all playlists
+        async function loadAllPlaylists() {
+            const tbody = document.getElementById('playlistsBody');
+            
+            try {
+                const response = await fetch(`${API_URL}/api/admin/playlists`, {
+                    headers: Auth.getHeaders()
+                });
+                
+                if (!response.ok) throw new Error('Error loading playlists');
+                
+                allPlaylists = await response.json();
+                renderPlaylists(allPlaylists);
+                
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="7" class="error-cell">Error al cargar playlists</td></tr>`;
+            }
+        }
+
+        // Render playlists table
+        function renderPlaylists(playlists) {
+            const tbody = document.getElementById('playlistsBody');
+            
+            if (playlists.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="empty-cell">No se encontraron playlists</td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = playlists.map(p => `
+                <tr>
+                    <td>
+                        <span class="playlist-name">${escapeHtml(p.name || 'Sin nombre')}</span>
+                        <span class="playlist-token mono">${p.token.substring(0, 8)}...</span>
+                    </td>
+                    <td>${p.owner || 'Anónimo'}</td>
+                    <td>${formatNumber(p.total_hits)}</td>
+                    <td>
+                        <span class="status-badge status-${(p.last_status || 'unknown').toLowerCase()}">${p.last_status || '?'}</span>
+                    </td>
+                    <td>
+                        <span class="status-badge status-${p.show_on_board ? 'ok' : 'unknown'}">${p.show_on_board ? 'Sí' : 'No'}</span>
+                    </td>
+                    <td>${formatDate(p.created_at)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-outline btn-small" onclick="copyPlaylistUrl('${p.token}')" title="Copiar URL">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                            </button>
+                            <a href="view.html?token=${p.token}" class="btn btn-outline btn-small" title="Ver">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Filter playlists
+        function filterPlaylists() {
+            const query = document.getElementById('playlistSearch').value.toLowerCase();
+            const filtered = allPlaylists.filter(p => 
+                (p.name || '').toLowerCase().includes(query) || 
+                p.token.toLowerCase().includes(query) ||
+                (p.owner || '').toLowerCase().includes(query)
+            );
+            renderPlaylists(filtered);
+        }
+
+        // Copy playlist URL
+        function copyPlaylistUrl(token) {
+            const url = `${API_URL}/raw/${token}.m3u`;
+            navigator.clipboard.writeText(url);
+            showToast('URL copiada al portapapeles', 'success');
+        }
+
+        // Close edit modal
+        function closeEditModal() {
+            document.getElementById('editUserModal').classList.remove('active');
+        }
+
+        // Show confirm modal
+        function showConfirm(title, message, callback) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            confirmCallback = callback;
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        // Close confirm modal
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+            confirmCallback = null;
+        }
+
+        // Confirm action
+        document.getElementById('confirmBtn').addEventListener('click', async () => {
+            if (confirmCallback) {
+                await confirmCallback();
+            }
+            closeConfirmModal();
+        });
+
+        // Toast notification
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <span>${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('toast-fade-out');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Helpers
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('es-ES').format(num || 0);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeEditModal();
+                closeConfirmModal();
+            }
+        });
+
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) {
+                    closeEditModal();
+                    closeConfirmModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

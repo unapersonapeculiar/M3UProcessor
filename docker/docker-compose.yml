@@ -1,0 +1,70 @@
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: m3u-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword_cambiar}
+      MYSQL_DATABASE: m3u_processor
+      MYSQL_USER: m3u_user
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-m3u_password_cambiar}
+      TZ: ${TZ:-Europe/Madrid}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword_cambiar}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - m3u-network
+
+  # Backend API
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    container_name: m3u-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: mysql+aiomysql://m3u_user:${MYSQL_PASSWORD:-m3u_password_cambiar}@mysql:3306/m3u_processor
+      SECRET_KEY: ${SECRET_KEY:-clave_secreta_para_jwt_muy_larga_y_segura}
+      FRONTEND_DOMAIN: ${FRONTEND_DOMAIN:-http://localhost:3000}
+      API_DOMAIN: ${API_DOMAIN:-http://localhost:8000}
+      TZ: ${TZ:-Europe/Madrid}
+    ports:
+      - "${PORT_API:-8000}:8000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - m3u-network
+
+  # Frontend (Nginx)
+  frontend:
+    image: nginx:alpine
+    container_name: m3u-frontend
+    restart: unless-stopped
+    volumes:
+      - ../frontend:/usr/share/nginx/html:ro
+      - ./nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+    environment:
+      API_URL: ${API_DOMAIN:-http://localhost:8000}
+      TZ: ${TZ:-Europe/Madrid}
+    ports:
+      - "${PORT_WEBUI:-3000}:80"
+    depends_on:
+      - backend
+    networks:
+      - m3u-network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  m3u-network:
+    driver: bridge
