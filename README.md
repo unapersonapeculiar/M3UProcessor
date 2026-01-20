@@ -51,15 +51,132 @@ Una aplicación web completa para procesar, editar y compartir listas IPTV en fo
 - Estadísticas del sistema
 - Gestión de usuarios y playlists
 
+## 🚀 Despliegue Rápido con Docker
+
+### Opción 1: Despliegue en 3 pasos (Recomendado)
+
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/tu-usuario/m3u-processor.git
+cd m3u-processor
+
+# 2. Configurar contraseñas (opcional pero recomendado)
+cp .env.example .env
+nano .env  # Cambiar SECRET_KEY y contraseñas MySQL
+
+# 3. Iniciar
+docker-compose up -d
+```
+
+**¡Listo!** Accede a:
+- **WebUI**: http://localhost:3000
+- **API**: http://localhost:8000
+- **API Docs**: http://localhost:8000/docs
+
+### Opción 2: docker-compose.yaml personalizado
+
+Crea un archivo `docker-compose.yaml` en tu servidor:
+
+```yaml
+services:
+  m3uprocessor:
+    image: ghcr.io/tu-usuario/m3uprocessor:latest
+    container_name: m3uprocessor
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+      - WEBUI_PORT=3000
+      - API_PORT=8000
+      - MYSQL_HOST=mysql
+      - MYSQL_PASSWORD=tu_password_seguro
+      - SECRET_KEY=tu_clave_secreta_muy_larga
+    ports:
+      - "3000:3000"
+      - "8000:8000"
+    volumes:
+      - ./config:/config
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    container_name: m3u-mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password_seguro
+      - MYSQL_DATABASE=m3u_processor
+      - MYSQL_USER=m3u_user
+      - MYSQL_PASSWORD=tu_password_seguro
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
+```
+
+### Configuración de Puertos Personalizados
+
+Puedes cambiar los puertos de la WebUI y la API:
+
+```yaml
+environment:
+  - WEBUI_PORT=8989    # Puerto de la interfaz web
+  - API_PORT=9898      # Puerto de la API
+ports:
+  - "8989:8989"        # Mapear al mismo valor que WEBUI_PORT
+  - "9898:9898"        # Mapear al mismo valor que API_PORT
+```
+
+### Variables de Entorno
+
+| Variable | Descripción | Por defecto |
+|----------|-------------|-------------|
+| `PUID` | User ID para permisos | `1000` |
+| `PGID` | Group ID para permisos | `1000` |
+| `TZ` | Zona horaria | `Europe/Madrid` |
+| `WEBUI_PORT` | Puerto de la interfaz web | `3000` |
+| `API_PORT` | Puerto de la API backend | `8000` |
+| `SECRET_KEY` | Clave secreta para JWT | Cambiar en producción |
+| `MYSQL_HOST` | Host de la base de datos | `mysql` |
+| `MYSQL_PASSWORD` | Contraseña de MySQL | Cambiar en producción |
+
+### Comandos Útiles
+
+```bash
+# Iniciar en segundo plano
+docker-compose up -d
+
+# Ver logs en tiempo real
+docker-compose logs -f
+
+# Ver logs de un servicio específico
+docker-compose logs -f m3uprocessor
+
+# Reiniciar
+docker-compose restart
+
+# Detener
+docker-compose down
+
+# Actualizar a nueva versión
+docker-compose pull && docker-compose up -d
+
+# Ver estado
+docker-compose ps
+```
+
+---
+
 ## 📋 Requisitos
 
 - Docker 20.10+
 - Docker Compose 2.0+
-- (Opcional) Git para despliegue desde repositorio
 
-## 🛠️ Instalación
+## 🛠️ Instalación Avanzada
 
-### Desarrollo Local
+### Desarrollo Local (con hot-reload)
 
 1. **Clonar el repositorio**
 ```bash
@@ -70,7 +187,6 @@ cd m3u-processor
 2. **Configurar variables de entorno**
 ```bash
 cp docker/.env.example docker/.env
-# Editar docker/.env si es necesario
 ```
 
 3. **Iniciar el entorno de desarrollo**
@@ -84,7 +200,7 @@ chmod +x scripts/dev.sh
 - API: http://localhost:8000
 - Documentación API: http://localhost:8000/docs
 
-### Producción
+### Producción con SSL (Let's Encrypt)
 
 1. **Configurar variables de entorno**
 ```bash
