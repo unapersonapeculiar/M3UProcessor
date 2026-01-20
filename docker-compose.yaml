@@ -1,0 +1,113 @@
+###############################################################################
+#                         M3UProcessor - Docker Compose                       #
+#                   IPTV M3U Playlist Processor (All-in-One)                  #
+###############################################################################
+#
+# Quick Start:
+#   1. Copy this file to your desired location
+#   2. Create the directories for volumes (config, database)
+#   3. Edit the environment variables below
+#   4. Run: docker-compose up -d
+#
+# Access:
+#   - WebUI: http://localhost:3000 (or your WEBUI_PORT)
+#   - API:   http://localhost:8000 (or your API_PORT)
+#   - Docs:  http://localhost:8000/docs
+#
+# Default credentials:
+#   - Email:    admin@m3uprocessor.xyz
+#   - Password: admin123
+#   ⚠️  CHANGE IMMEDIATELY IN PRODUCTION!
+#
+###############################################################################
+
+services:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # M3UProcessor - Main Application
+  # ═══════════════════════════════════════════════════════════════════════════
+  m3uprocessor:
+    build: .
+    # image: m3uprocessor:latest  # Uncomment when using pre-built image
+    container_name: m3uprocessor
+    restart: unless-stopped
+    environment:
+      # ─────────────────────────────────────────────────────────────────────────
+      # System Configuration (LinuxServer.io style)
+      # ─────────────────────────────────────────────────────────────────────────
+      - PUID=1000                          # User ID for file permissions
+      - PGID=1000                          # Group ID for file permissions
+      - TZ=Europe/Madrid                   # Timezone
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Port Configuration
+      # ─────────────────────────────────────────────────────────────────────────
+      - WEBUI_PORT=3000                    # Frontend web interface port
+      - API_PORT=8000                      # Backend API port
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Database Configuration
+      # ─────────────────────────────────────────────────────────────────────────
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=m3u_user
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-m3u_password_cambiar}
+      - MYSQL_DATABASE=m3u_processor
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Security Configuration
+      # ─────────────────────────────────────────────────────────────────────────
+      - SECRET_KEY=${SECRET_KEY:-clave_secreta_para_jwt_muy_larga_y_segura_cambiar}
+    ports:
+      - "3000:3000"                         # WebUI - Map to WEBUI_PORT value
+      - "8000:8000"                         # API   - Map to API_PORT value
+    volumes:
+      - ./config:/config                    # Application configuration
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - m3u-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # MySQL Database
+  # ═══════════════════════════════════════════════════════════════════════════
+  mysql:
+    image: mysql:8.0
+    container_name: m3u-mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-rootpassword_cambiar}
+      - MYSQL_DATABASE=m3u_processor
+      - MYSQL_USER=m3u_user
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-m3u_password_cambiar}
+      - TZ=Europe/Madrid
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - m3u-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword_cambiar}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Volumes
+# ═══════════════════════════════════════════════════════════════════════════════
+volumes:
+  mysql_data:
+    driver: local
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Networks
+# ═══════════════════════════════════════════════════════════════════════════════
+networks:
+  m3u-network:
+    driver: bridge

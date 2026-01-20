@@ -1,0 +1,79 @@
+###############################################################################
+#                    M3UProcessor - Example with Custom Ports                 #
+#                                                                             #
+#   This example shows how to configure custom WEBUI and API ports            #
+#   Similar to LinuxServer.io qBittorrent configuration style                 #
+###############################################################################
+
+services:
+  m3uprocessor:
+    build: .
+    container_name: m3uprocessor
+    restart: unless-stopped
+    environment:
+      # ─────────────────────────────────────────────────────────────────────────
+      # System Configuration
+      # ─────────────────────────────────────────────────────────────────────────
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Custom Port Configuration
+      # ─────────────────────────────────────────────────────────────────────────
+      - WEBUI_PORT=8989                    # Custom WebUI port
+      - API_PORT=9898                      # Custom API port
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Database Configuration
+      # ─────────────────────────────────────────────────────────────────────────
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=m3u_user
+      - MYSQL_PASSWORD=m3u_password_cambiar
+      - MYSQL_DATABASE=m3u_processor
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Security Configuration
+      # ─────────────────────────────────────────────────────────────────────────
+      - SECRET_KEY=clave_secreta_para_jwt_muy_larga_y_segura_cambiar
+    ports:
+      # ⚠️  IMPORTANT: Map host ports to match the WEBUI_PORT and API_PORT values
+      - "8989:8989"                         # WebUI: host:container (matches WEBUI_PORT)
+      - "9898:9898"                         # API:   host:container (matches API_PORT)
+    volumes:
+      - ./config:/config
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - m3u-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: m3u-mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword_cambiar
+      - MYSQL_DATABASE=m3u_processor
+      - MYSQL_USER=m3u_user
+      - MYSQL_PASSWORD=m3u_password_cambiar
+      - TZ=Europe/Madrid
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - m3u-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword_cambiar"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  m3u-network:
+    driver: bridge
