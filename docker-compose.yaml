@@ -6,8 +6,10 @@
 # Quick Start:
 #   1. Copy this file to your desired location
 #   2. Create the directories for volumes (config, database)
-#   3. Edit the environment variables below
+#   3. Edit the passwords and SECRET_KEY below (marked with ⚠️)
 #   4. Run: docker-compose up -d
+#
+# Note: All configuration is self-contained in this file. No .env file needed.
 #
 # Access:
 #   - WebUI: http://localhost:3000 (or your WEBUI_PORT)
@@ -50,13 +52,13 @@ services:
       - MYSQL_HOST=mysql
       - MYSQL_PORT=3306
       - MYSQL_USER=m3u_user
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-m3u_password_cambiar}
+      - MYSQL_PASSWORD=m3u_password_cambiar      # ⚠️ CHANGE IN PRODUCTION!
       - MYSQL_DATABASE=m3u_processor
 
       # ─────────────────────────────────────────────────────────────────────────
       # Security Configuration
       # ─────────────────────────────────────────────────────────────────────────
-      - SECRET_KEY=${SECRET_KEY:-clave_secreta_para_jwt_muy_larga_y_segura_cambiar}
+      - SECRET_KEY=clave_secreta_para_jwt_muy_larga_y_segura_cambiar  # ⚠️ CHANGE IN PRODUCTION!
     ports:
       - "3000:3000"                         # WebUI - Map to WEBUI_PORT value
       - "8000:8000"                         # API   - Map to API_PORT value
@@ -82,17 +84,17 @@ services:
     container_name: m3u-mysql
     restart: unless-stopped
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-rootpassword_cambiar}
+      - MYSQL_ROOT_PASSWORD=rootpassword_cambiar  # ⚠️ CHANGE IN PRODUCTION!
       - MYSQL_DATABASE=m3u_processor
       - MYSQL_USER=m3u_user
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-m3u_password_cambiar}
+      - MYSQL_PASSWORD=m3u_password_cambiar       # ⚠️ CHANGE IN PRODUCTION!
       - TZ=Europe/Madrid
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
       - m3u-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword_cambiar}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword_cambiar"]
       interval: 10s
       timeout: 5s
       retries: 5

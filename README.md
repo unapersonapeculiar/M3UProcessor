@@ -77,9 +77,8 @@ Elige el método que mejor se adapte a tu entorno:
 git clone https://github.com/tu-usuario/m3u-processor.git
 cd m3u-processor
 
-# 2. Configurar contraseñas (opcional pero recomendado)
-cp .env.example .env
-nano .env  # Cambiar SECRET_KEY y contraseñas MySQL
+# 2. Configurar contraseñas (editar docker-compose.yaml)
+nano docker-compose.yaml  # Cambiar SECRET_KEY y contraseñas MySQL (marcados con ⚠️)
 
 # 3. Iniciar
 docker-compose up -d
@@ -447,8 +446,7 @@ m3u-processor/
 │   ├── Dockerfile.backend        # Imagen del backend
 │   ├── nginx.conf.template       # Nginx desarrollo
 │   ├── nginx-frontend.conf       # Nginx frontend producción
-│   ├── nginx-api.conf            # Nginx API producción
-│   └── .env                      # Variables de entorno
+│   └── nginx-api.conf            # Nginx API producción
 ├── scripts/
 │   ├── dev.sh               # Script de desarrollo
 │   └── prod.sh              # Script de producción
