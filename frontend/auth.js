@@ -2,11 +2,9 @@
  * M3U Processor - Authentication Module
  */
 
-// Use relative URLs for API calls - Nginx proxies /api/ to the backend
-// Only use absolute URL for external production API
-const API_URL = window.location.hostname.includes('m3uprocessor.xyz')
-    ? 'https://api.m3uprocessor.xyz'
-    : '';  // Empty = relative URLs, works with Nginx proxy
+// Always use relative URLs - Nginx proxies /api/ to the backend
+// Works with any domain, IPv4, IPv6, or localhost
+const API_URL = '';
 
 const Auth = {
     TOKEN_KEY: 'm3u_token',
