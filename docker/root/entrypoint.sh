@@ -57,6 +57,27 @@ envsubst '${WEBUI_PORT} ${API_PORT}' < /etc/nginx/templates/default.conf.templat
 echo "Generating Supervisor configuration..."
 envsubst '${API_PORT}' < /etc/supervisor/conf.d/supervisord.conf.template > /etc/supervisor/conf.d/supervisord.conf
 
+# Wait for MySQL to be ready
+MYSQL_HOST=${MYSQL_HOST:-mysql}
+MYSQL_PORT=${MYSQL_PORT:-3306}
+echo "Waiting for MySQL at ${MYSQL_HOST}:${MYSQL_PORT}..."
+max_attempts=30
+attempt=1
+while [ $attempt -le $max_attempts ]; do
+    if nc -z "${MYSQL_HOST}" "${MYSQL_PORT}" 2>/dev/null; then
+        echo "MySQL is available!"
+        break
+    fi
+    echo "  Attempt $attempt/$max_attempts - MySQL not ready, waiting..."
+    sleep 2
+    attempt=$((attempt + 1))
+done
+
+if [ $attempt -gt $max_attempts ]; then
+    echo "WARNING: Could not connect to MySQL after $max_attempts attempts"
+    echo "Starting anyway - application will retry connections..."
+fi
+
 echo "───────────────────────────────────────────"
 echo "  Starting services..."
 echo "───────────────────────────────────────────"
