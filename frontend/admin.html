@@ -378,10 +378,7 @@
 
     <script src="auth.js"></script>
     <script>
-        // Configuration - use relative URLs for Nginx proxy
-        const API_URL = window.location.hostname.includes('m3uprocessor.xyz')
-            ? 'https://api.m3uprocessor.xyz'
-            : '';
+        // API_URL is defined in auth.js and exported to window.API_URL
 
         let currentUser = null;
         let allUsers = [];
