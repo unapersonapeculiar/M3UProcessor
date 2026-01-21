@@ -378,10 +378,10 @@
 
     <script src="auth.js"></script>
     <script>
-        // Configuration
-        const API_URL = window.location.hostname === 'localhost' 
-            ? 'http://localhost:8000' 
-            : 'https://api.m3uprocessor.xyz';
+        // Configuration - use relative URLs for Nginx proxy
+        const API_URL = window.location.hostname.includes('m3uprocessor.xyz')
+            ? 'https://api.m3uprocessor.xyz'
+            : '';
 
         let currentUser = null;
         let allUsers = [];
