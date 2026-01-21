@@ -80,7 +80,7 @@ services:
   # MySQL Database
   # ═══════════════════════════════════════════════════════════════════════════
   mysql:
-    image: mysql:8.0
+    image: mysql:lts
     container_name: m3u-mysql
     restart: unless-stopped
     environment:
@@ -97,8 +97,8 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword_cambiar"]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 30s
+      retries: 10
+      start_period: 60s
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Volumes

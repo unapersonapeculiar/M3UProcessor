@@ -30,6 +30,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     supervisor \
     gettext-base \
     gosu \
+    netcat-openbsd \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
