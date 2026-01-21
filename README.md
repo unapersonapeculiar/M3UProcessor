@@ -117,7 +117,7 @@ services:
       - mysql
 
   mysql:
-    image: mysql:8.0
+    image: mysql:lts
     container_name: m3u-mysql
     restart: unless-stopped
     environment:
