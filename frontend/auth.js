@@ -12,6 +12,24 @@ const Auth = {
     TOKEN_KEY: 'm3u_token',
     USER_KEY: 'm3u_user',
 
+    async init() {
+        this.updateNavigation();
+        if (this.isLoggedIn()) {
+            try {
+                const user = await this.getMe();
+                this.setUser(user);
+                this.updateNavigation();
+                return user;
+            } catch (e) {
+                // Token invalid or network error, clear session
+                localStorage.removeItem(this.TOKEN_KEY);
+                localStorage.removeItem(this.USER_KEY);
+                return null;
+            }
+        }
+        return null;
+    },
+
     getToken() {
         return localStorage.getItem(this.TOKEN_KEY);
     },
