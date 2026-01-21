@@ -7,10 +7,9 @@ docker-compose*.yaml
 docker-compose*.yml
 !docker/
 
-# Environment files
+# Environment files (if any)
 .env
 .env.*
-!.env.example
 
 # Documentation
 *.md

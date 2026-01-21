@@ -41,32 +41,21 @@ check_docker() {
     fi
 }
 
-# Create .env file if it doesn't exist
-setup_env() {
-    if [ ! -f "$DOCKER_DIR/.env" ]; then
-        print_warning ".env file not found. Creating from template..."
-        cat > "$DOCKER_DIR/.env" << 'EOF'
-# Development Environment
-PORT_WEBUI=3000
-PORT_API=8000
-FRONTEND_DOMAIN=http://localhost:3000
-API_DOMAIN=http://localhost:8000
-SECRET_KEY=dev_secret_key_change_in_production
-MYSQL_ROOT_PASSWORD=rootpassword
-MYSQL_PASSWORD=m3upassword
-TZ=Europe/Madrid
-EOF
-        print_success ".env file created"
+# Check docker-compose.yaml exists
+check_compose() {
+    if [ ! -f "$PROJECT_DIR/docker-compose.yaml" ]; then
+        print_error "docker-compose.yaml not found!"
+        exit 1
     fi
 }
 
 # Start development environment
 start() {
     check_docker
-    setup_env
-    
+    check_compose
+
     print_status "Starting M3U Processor development environment..."
-    cd "$DOCKER_DIR"
+    cd "$PROJECT_DIR"
     docker compose up -d
     
     print_success "Development environment started!"
@@ -85,7 +74,7 @@ start() {
 # Stop development environment
 stop() {
     print_status "Stopping M3U Processor development environment..."
-    cd "$DOCKER_DIR"
+    cd "$PROJECT_DIR"
     docker compose down
     print_success "Development environment stopped"
 }
@@ -98,7 +87,7 @@ restart() {
 
 # Show logs
 logs() {
-    cd "$DOCKER_DIR"
+    cd "$PROJECT_DIR"
     if [ -z "$2" ]; then
         docker compose logs -f
     else
@@ -109,10 +98,10 @@ logs() {
 # Build containers
 build() {
     check_docker
-    setup_env
-    
+    check_compose
+
     print_status "Building M3U Processor containers..."
-    cd "$DOCKER_DIR"
+    cd "$PROJECT_DIR"
     docker compose build --no-cache
     print_success "Build completed"
 }
@@ -123,7 +112,7 @@ clean() {
     read -p "Are you sure? (y/N) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
-        cd "$DOCKER_DIR"
+        cd "$PROJECT_DIR"
         docker compose down -v --rmi all
         print_success "Cleanup completed"
     else
@@ -133,7 +122,7 @@ clean() {
 
 # Show status
 status() {
-    cd "$DOCKER_DIR"
+    cd "$PROJECT_DIR"
     docker compose ps
 }
 

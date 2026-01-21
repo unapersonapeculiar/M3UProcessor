@@ -41,17 +41,18 @@ check_docker() {
     fi
 }
 
-# Check if .env file exists with production settings
+# Check if docker-compose.yaml has production-safe settings
 check_env() {
-    if [ ! -f "$DOCKER_DIR/.env" ]; then
-        print_error ".env file not found!"
-        print_status "Please create $DOCKER_DIR/.env with production settings."
+    COMPOSE_FILE="$PROJECT_DIR/docker-compose.yaml"
+    if [ ! -f "$COMPOSE_FILE" ]; then
+        print_error "docker-compose.yaml not found!"
         exit 1
     fi
-    
-    # Check for default passwords
-    if grep -q "rootpassword_cambiar\|m3u_password_cambiar\|clave_secreta_para_jwt" "$DOCKER_DIR/.env"; then
-        print_error "Please change default passwords and secrets in .env before deploying to production!"
+
+    # Check for default passwords in docker-compose.yaml
+    if grep -q "rootpassword_cambiar\|m3u_password_cambiar\|clave_secreta_para_jwt" "$COMPOSE_FILE"; then
+        print_error "Please change default passwords and secrets in docker-compose.yaml before deploying to production!"
+        print_status "Look for values marked with '# ⚠️ CHANGE IN PRODUCTION!'"
         exit 1
     fi
 }
@@ -133,14 +134,15 @@ backup() {
     BACKUP_DIR="$PROJECT_DIR/backups"
     TIMESTAMP=$(date +%Y%m%d_%H%M%S)
     BACKUP_FILE="$BACKUP_DIR/m3u_processor_$TIMESTAMP.sql"
-    
+
     mkdir -p "$BACKUP_DIR"
-    
+
     print_status "Creating database backup..."
-    
+
+    # Extract MYSQL_ROOT_PASSWORD from docker-compose.yaml
+    MYSQL_ROOT_PASSWORD=$(grep -oP 'MYSQL_ROOT_PASSWORD=\K[^#\s]+' "$PROJECT_DIR/docker-compose.yaml" | head -1)
+
     cd "$DOCKER_DIR"
-    source .env
-    
     docker compose -f docker-compose.prod.yml exec -T mysql \
         mysqldump -u root -p"$MYSQL_ROOT_PASSWORD" m3u_processor > "$BACKUP_FILE"
     
